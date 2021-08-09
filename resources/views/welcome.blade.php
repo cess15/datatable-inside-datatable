@@ -24,6 +24,7 @@
         </div>
         <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
         <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script type="text/javascript">
             function format ( data ) {
                 return `<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">
@@ -31,10 +32,12 @@
                         <tr>
                             <th>Sub Categoria</th>
                             <th>Estado</th>
+                            <th>Editar</th>
+                            <th>Eliminar</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${getDataOfJSON(convertToJSON(data.subCategory))}
+                        ${getDataOfJSON(convertToJSON(data))}
                     </tbody>
                 </table>
                 `
@@ -50,7 +53,9 @@
                 array.map(element => {
                     string+=`<tr>
                                 <td id="idName">${element.name}</td>
-                                <td>Activo</td>
+                                <td class="active-status">Activo</td>
+                                <td>Editar ${element.id}</td>
+                                <td><button id="${element.id}" class="deleteSubCategory btn btn-danger">Eliminar ${element.id}</button></td>
                             </tr>`
                 });
                 return string
@@ -105,7 +110,7 @@
             })
 
             $('#tableCategories tbody').on('click', 'td.details-control', function () {
-                var tr = $(this).parents('tr');
+                var tr = $(this).closest('tr');
                 var row = table.row( tr );
 
                 if ( row.child.isShown() ) {
@@ -115,11 +120,37 @@
                 }
                 else {
                     // Open this row
-                    row.child( format(row.data()) ).show()
+                    row.child( format(row.data().subCategory) ).show()
                     tr.addClass('shown');
+
 
                 }
             } );
+
+            $('#tableCategories tbody').on('click', 'button.deleteSubCategory', function () {
+                let id = $(this).attr('id')
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire(
+                        'Deleted!',
+                        `Your file has been deleted. ID: ${id}`,
+                        'success'
+                        )
+                    }
+                })
+
+            });
+
+
 
 
         </script>
